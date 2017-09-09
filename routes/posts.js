@@ -1,71 +1,80 @@
-var express = require('express');
-var router = express.Router();
-var post = require('../models/posts');
+'use strict'
 
-/* GET posts */
-router.get('/', function(req, res, next) {
-  post.getAllPosts(function(err, rows) {
-    if(err) {
-      res.json(err);
-    }
-    else {
-      res.json(rows);
-    }
-  })
-});
+const express = require('express');
+const router = express.Router();
+const co = require('co')
+const modelPost = require('../models/posts')
 
-/* GET post */
-router.get('/:id', function(req, res, next) {
-  post.getPostById(req.params.id, function(err, rows) {
-    if(err) {
-      res.json(err);
-    }
-    else {
-      res.json(rows);
-    }
-  });
-});
+/* GET posts list */
+router.get('/',
+  function(req, res) {
+    co(function * () {
+      const posts = yield modelPost.list.bind(null)
+      res.json({
+        success: true,
+        result: posts
+      })
+    })
+})
 
+/* GET post get */
+router.get('/:id',
+  function(req, res) {
+    co(function * () {
+      const post = yield modelPost.get.bind(null, req.params.id)
+      res.json({
+        success: true,
+        result: post
+      })
+    })
+  }
+)
 
-/* CREATE post */
-router.post('/', function(req, res, next) {
-  const currentTime = (new Date()).getTime();
-  req.body.created = currentTime;
-  req.body.updated = currentTime;
+/* POST post create */
+router.post('/',
+  function(req, res) {
+    co(function * () {
+      const date = +new Date()
+      let post = {
+        title: req.body.title,
+        content: req.body.content,
+        user_id: res.locals.user.uid,
+        created: date,
+        updated: date
+      }
+      yield modelPost.create.bind(null, post)
+      res.json({
+        succes: true,
+        result: post
+      })
+    })
+  }
+)
 
-  post.addPost(req.body, function(err, count) {
-    if(err) {
-      res.json(err);
-    }
-    else {
-      req.body.id = count.insertId;
-      res.json(req.body);
-    }
-  });
-});
+/* DELETE post delete */
+router.delete('/:id',
+  function(req, res) {
+    co(function * () {
+      const date = +new Date()
+      yield modelPost.delete.bind(null, req.params.id, res.locals.user.uid, date)
+      res.json({
+        success: true
+      })
+    })
+  }
+)
 
-/* DELETE post */
-router.delete('/:id', function(req, res, next) {
-  post.deletePost(req.params.id, function(err, count) {
-    if(err) {
-      res.json(err);
-    }
-    else {
-      res.json(count);
-    }
-  });
-});
-
-/* PUT post */
-router.put('/:id', function(req, res, next) {
-  post.updatePost(req.params.id, req.body, function(err, rows) {
-    if(err) {
-      res.json(err);
-    }
-    else {
-      res.json(rows);
-    }
-  });
-});
+/* UPDATE post update */
+router.update('/:id',
+  function(req, res) {
+    co(function * () {
+      req.body.updated = +new Date()
+      yield modelPost.update.bind(null, req.params.id, res.locals.user.uid, req.body)
+      res.json({
+        success: true
+      })
+    })
+  }
+)
 
 module.exports = router;
