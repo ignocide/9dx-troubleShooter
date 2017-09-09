@@ -8,9 +8,11 @@ const favicon = require('serve-favicon')
 const logger = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
+const mysql = require('mysql');
 
 const routes = require('./routes/index')
 const users = require('./routes/users')
+const posts = require('./routes/posts')
 
 const app = express()
 const server = http.Server(app)
@@ -31,6 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/', routes)
 app.use('/users', users)
+app.use('/posts', posts)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

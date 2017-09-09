@@ -8,7 +8,15 @@ router.get('/', function(req, res, next) {
 
 /* POST posts create */
 router.post('/', function(req, res, next) {
-  res.send('response with a resource');
+  var published_date = new Date(req.body.published_date);
+  var post = {
+    title: req.body.title,
+    content: req.body.content,
+    created: published_date,
+    update: published_date,
+  };
+  var query = connetions
+
 });
 
 /* GET post */
