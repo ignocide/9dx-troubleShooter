@@ -65,7 +65,7 @@ router.route('/:comment_id/vote')
 )
 
 router.route('/:comment_id/vote/:vote_id')
-  .post(
+  .delete(
     mdAuth.requireLogin,
     function (req, res, next) {
       co(function * () {
