@@ -1,32 +1,69 @@
 var express = require('express');
 var router = express.Router();
+var post = require('../models/posts');
 
-/* GET posts list */
-router.get('/', function(req, res, next) {
-  res.send('response with a resource');
-});
-
-/* POST posts create */
-router.post('/', function(req, res, next) {
-  var published_date = new Date(req.body.published_date);
-  var post = {
-    title: req.body.title,
-    content: req.body.content,
-    created: published_date,
-    update: published_date,
-  };
-  var query = connetions
-
-});
-
-/* GET post */
+/* GET post or posts */
 router.get('/:id', function(req, res, next) {
-  res.send('response with a resource');
+  if(req.params.id) {
+    post.getPostById(req.params.id, function(err, rows) {
+      if(err) {
+        res.json(err);
+      }
+      else {
+        res.json(rows);
+      }
+    });
+  }
+  else {
+    post.getAllPosts(function(err, rows) {
+      if(err) {
+        res.json(err);
+      }
+      else {
+        res.json(rows);
+      }
+    });
+  }
+});
+
+
+/* CREATE post */
+router.post('/', function(req, res, next) {
+  let data = {
+
+  };
+  post.addPost(data, function(err, count) {
+    if(err) {
+      res.json(err)
+    }
+    else {
+      res.json(data)
+    }
+  });
 });
 
 /* DELETE post */
 router.delete('/:id', function(req, res, next) {
+  post.deletePost(req.params.id, function(err, count) {
+    if(err) {
+      res.json(err);
+    }
+    else {
+      res.json(count);
+    }
+  });
+});
 
+/* PUT post */
+router.put('/:id', function(req, res, next) {
+  post.updatePost(req.params.id, function(err, rows) {
+    if(err) {
+      res.json(err);
+    }
+    else {
+      res.json(rows);
+    }
+  });
 });
 
 module.exports = router;
