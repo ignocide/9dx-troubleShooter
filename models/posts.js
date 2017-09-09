@@ -9,30 +9,33 @@ const Post = {
   },
   addPost: function(post, callback) {
     return db.query(
-      'INSERT into posts values (?, ?, ?, ?, ?)',
+      'INSERT into posts values (DEFAULT, ?, ?, ?, ?, ?)',
       [
-        post.id,
         post.title,
         post.content,
         post.created,
-        post.updated
-      ]
+        post.updated,
+        post.user_id
+      ],
+      callback
     );
   },
   deletePost: function(id, callback) {
     return db.query('DELETE from posts WHERE id=?', [id], callback);
   },
   updatePost: function(id, post, callback) {
+    const currentTime = (new Date()).getTime();
     return db.query(
-      'UPDATE posts set title=? content=? updated=? WHERE id=?',
+      'UPDATE posts SET title=?, content=?, updated=? WHERE id=?',
       [
         post.title,
         post.content,
-        post.updaetd,
+        currentTime,
         id
-      ]
+      ],
+      callback
     );
   }
 };
 
-module.export = Post;
+module.exports = Post;
