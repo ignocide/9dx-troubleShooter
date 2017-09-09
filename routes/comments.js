@@ -4,6 +4,16 @@ const express = require('express')
 const router = express.Router()
 const co = require('co')
 const modelComment = require('../models/comments')
+const modelVote = require('../models/votes')
+
+var errorRes = function (res) {
+  return function (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    })
+  }
+}
 
 /* GET comment get */
 router.get('/:comment_id',
@@ -15,6 +25,7 @@ router.get('/:comment_id',
         result: comment
       })
     })
+    .catch(errorRes(res))
   }
 )
 
@@ -28,21 +39,25 @@ router.delete('/:comment_id',
         success: true
       })
     })
+    .catch(errorRes(res))
   }
 )
 
-//
-// router.route('/comment/:comment_id/vote')
-//   .get(function () {
-//
-//   })
-//
-
-router.route('/comment/:comment_id/vote')
+router.route('/:comment_id/vote')
   .post(function (req, res, next) {
     co(function * () {
-      yield
+      var uid = res.locals.user.uid
+      var vote = {
+        user_id: uid,
+        comment_id: req.params.comment_id
+      }
+      yield modelVote.create.bind(null, vote)
+
+      res.json({
+        success: true
+      })
     })
+    .catch(errorRes(res))
   }
 )
 

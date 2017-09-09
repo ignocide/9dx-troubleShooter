@@ -98,7 +98,7 @@ router.route('/:post_id')
 
 /* GET comments list */
 router.route('/:post_id/comments')
-get(
+.get(
   function (req, res) {
     co(function * () {
       const comments = yield modelComment.list.bind(null, req.params.post_id)
