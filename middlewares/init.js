@@ -7,7 +7,7 @@ const serviceToken = require('../services/token')
 module.exports = function (req, res, next) {
   co(function *() {
     // check login
-    res.isAuthorization = function () {
+    req.isAuthorization = function () {
       if (res.locals.user) {
         return true
       } else {
