@@ -15,8 +15,8 @@ Comment.prototype.create = function (comment, cb) {
 }
 
 Comment.prototype.list = function (post_id, cb) {
-  db.query('SELECT * FROM comments WHERE post_id=$post_id AND deleted=0', function (err, rows) {
-    db(err, rows)
+  db.query('SELECT * FROM comments WHERE post_id=$post_id AND deleted=0', {post_id, post_id}, function (err, rows) {
+    cb(err, rows)
   })
 }
 

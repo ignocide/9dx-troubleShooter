@@ -20,9 +20,12 @@ router.get('/',
   function (req, res) {
     co(function * () {
       const posts = yield modelPost.list.bind(null)
+      if (!posts.length) {
+        throw new Error('no post')
+      }
       res.json({
         success: true,
-        result: posts
+        result: posts[0]
       })
     })
     .catch(errorRes(res))
@@ -34,7 +37,7 @@ router.get('/:post_id',
   function (req, res) {
     co(function * () {
       const post = yield modelPost.get.bind(null, req.params.post_id)
-      const comments = yield modelComment.list.bind(null, req.params.id)
+      const comments = yield modelComment.list.bind(null, req.params.post_id)
       res.json({
         success: true,
         result: {
