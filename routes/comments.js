@@ -63,8 +63,6 @@ router.route('/:comment_id/vote')
       .catch(errorRes(res))
     }
 )
-
-router.route('/:comment_id/vote/:vote_id')
   .delete(
     mdAuth.requireLogin,
     function (req, res, next) {
@@ -72,7 +70,7 @@ router.route('/:comment_id/vote/:vote_id')
         var uid = res.locals.user.uid
         var vote = {
           user_id: uid,
-          vote_id: req.params.vote_id
+          comment_id: req.params.comment_id
         }
         yield modelVote.delete.bind(null, vote)
 
