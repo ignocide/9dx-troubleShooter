@@ -27,10 +27,17 @@ app.set('view engine', 'jade')
 
 // uncomment after placing your favicon in /public
 // app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.all('/*', function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With')
+  next()
+})
+
 app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
+
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(passport.initialize())
 app.use(passport.session())
@@ -61,7 +68,7 @@ if (app.get('env') === 'development') {
     res.status(err.status || 500)
     res.render('error', {
       message: err.message,
-      error: errmodelComment
+      error: err
     })
   })
 }
