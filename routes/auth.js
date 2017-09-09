@@ -24,7 +24,7 @@ router.post('/facebook',
       var date = getTime()
       user = {
         uid: uid,
-        name: profile.displayName,
+        name: profile.name,
         ctime: date,
         utime: date
       }
