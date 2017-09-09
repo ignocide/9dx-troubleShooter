@@ -29,15 +29,15 @@ router.get('/:id', function(req, res, next) {
 
 /* CREATE post */
 router.post('/', function(req, res, next) {
-  let data = {
-
-  };
-  post.addPost(data, function(err, count) {
+  const currentTime = (new Date()).getTime();
+  req.body.created = currentTime;
+  req.body.updated = currentTime;
+  post.addPost(req.body, function(err, count) {
     if(err) {
-      res.json(err)
+      res.json(err);
     }
     else {
-      res.json(data)
+      res.json(req.body);
     }
   });
 });
