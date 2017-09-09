@@ -57,8 +57,12 @@ router.route('/:post_id')
 .get(
   function (req, res) {
     co(function * () {
+      var user_id = 0
+      try {
+        user_id = res.locals.user.uid
+      } catch (e) {}
       const post = yield modelPost.get.bind(null, req.params.post_id)
-      const comments = yield modelComment.list.bind(null, req.params.post_id)
+      const comments = yield modelComment.list.bind(null, req.params.post_id, user_id)
       post.comments = comments
       res.json({
         success: true,
@@ -100,7 +104,11 @@ router.route('/:post_id/comments')
 .get(
   function (req, res) {
     co(function * () {
-      const comments = yield modelComment.list.bind(null, req.params.post_id)
+      var user_id = 0
+      try {
+        user_id = res.locals.user.uid
+      } catch (e) {}
+      const comments = yield modelComment.list.bind(null, req.params.post_id, user_id)
       res.json({
         success: true,
         result: comments
@@ -125,6 +133,52 @@ router.route('/:post_id/comments')
     })
     .catch(errorRes(res))
   }
+)
+
+router.route('/:post_id/comments/:comment_id/check')
+  .all(
+    mdAuth.requireLogin,
+    function (req, res, next) {
+      co(function * () {
+        const post = yield modelPost.get.bind(null, req.params.post_id)
+        if (post.user_id != res.locals.user.uid) {
+          return res.status(403).json({
+            success: false,
+            error: 'permission deny'
+          })
+        }
+
+        next()
+      })
+    .catch(errorRes(res))
+    }
+  )
+  .post(
+    function (req, res, next) {
+      co(function * () {
+        yield modelComment.check.bind(null, {
+          comment_id: req.params.comment_id
+        })
+
+        res.json({
+          success: true
+        })
+      })
+      .catch(errorRes(res))
+    }
+)
+  .delete(
+    function (req, res, next) {
+      co(function * () {
+        yield modelComment.uncheck.bind(null, {
+          comment_id: req.params.comment_id
+        })
+        res.json({
+          success: true
+        })
+      })
+      .catch(errorRes(res))
+    }
 )
 
 module.exports = router

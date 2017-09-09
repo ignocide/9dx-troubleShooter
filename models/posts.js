@@ -9,7 +9,7 @@ var normalize = function (post) {
     uid: post.uid,
     name: post.name
   }
-  delete post.uid,
+  delete post.uid
   delete post.name
   return post
 }
@@ -21,7 +21,12 @@ Post.prototype.create = function (post, cb) {
 }
 
 Post.prototype.list = function (cb) {
-  db.query('SELECT p.*, u.uid,u.name FROM posts p join users u on p.user_id = u.uid WHERE p.deleted=0 and u.deleted = 0', function (err, rows) {
+  db.query(
+  'SELECT p.*, u.uid,u.name,' +
+'(SELECT COUNT(*) FROM comments c WHERE p.id = c.post_id and c.deleted = 0 and c.checked = 1) as selected, ' +
+'(SELECT COUNT(*) FROM comments c WHERE p.id = c.post_id and c.deleted = 0 and c.checked = 0) as suggested ' +
+' FROM posts p join users u on p.user_id = u.uid WHERE p.deleted=0 and u.deleted = 0',
+  function (err, rows) {
     if (err) {
       return cb(err)
     }

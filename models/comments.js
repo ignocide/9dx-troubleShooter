@@ -14,8 +14,8 @@ Comment.prototype.create = function (comment, cb) {
   })
 }
 
-Comment.prototype.list = function (post_id, cb) {
-  db.query('SELECT co.*,(SELECT COUNT(*) FROM votes v WHERE co.id=v.comment_id and v.deleted = 0) as count FROM comments as co WHERE co.deleted=0 and co.post_id = $post_id', {post_id, post_id}, function (err, rows) {
+Comment.prototype.list = function (post_id, user_id, cb) {
+  db.query('SELECT co.*,(SELECT COUNT(*) FROM votes v WHERE co.id=v.comment_id and v.deleted = 0) as count,(SELECT COUNT(*) FROM votes v WHERE co.id=v.comment_id and v.deleted = 0 and v.user_id = $user_id) as voted FROM comments as co WHERE co.deleted=0 and co.post_id = $post_id', {post_id, post_id, user_id: user_id}, function (err, rows) {
     cb(err, rows)
   })
 }
@@ -39,6 +39,20 @@ Comment.prototype.update = function (comment_id, user_id, comment, cb) {
   comment.comment_id = comment_id
   comment.user_id = user_id
   db.query('UPDATE comments SET content=$content, updated=$updated WHERE id=$comment_id AND user_id=$user_id', comment, function (err, rows) {
+    cb(err, rows)
+  })
+}
+
+Comment.prototype.check = function (comment, cb) {
+  comment.updated = getTime()
+  db.query('UPDATE comments SET checked = 1, updated=$updated WHERE id=$comment_id', comment, function (err, rows) {
+    cb(err, rows)
+  })
+}
+
+Comment.prototype.uncheck = function (comment, cb) {
+  comment.updated = getTime()
+  db.query('UPDATE comments SET checked = 0, updated=$updated WHERE id=$comment_id', comment, function (err, rows) {
     cb(err, rows)
   })
 }
