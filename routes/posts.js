@@ -5,6 +5,7 @@ const router = express.Router()
 const co = require('co')
 const modelPost = require('../models/posts')
 const modelComment = require('../models/comments')
+const mdAuth = require('../middlewares/auth')
 
 var errorRes = function (res) {
   return function (err) {
@@ -31,6 +32,7 @@ router.route('/')
 )
 // write post
 .post(
+  mdAuth.requireLogin,
   function (req, res) {
     co(function * () {
       const date = getTime()
@@ -108,6 +110,7 @@ router.route('/:post_id/comments')
   }
 )
 .post(
+  mdAuth.requireLogin,
   function (req, res) {
     co(function * () {
       let comment = {
