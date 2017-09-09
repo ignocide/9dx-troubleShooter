@@ -13,6 +13,7 @@ const passport = require('passport')
 const routes = require('./routes/index')
 const users = require('./routes/users')
 const posts = require('./routes/posts')
+const comments = require('./routes/comments')
 const auth = require('./routes/auth')
 
 const app = express()
@@ -38,6 +39,7 @@ app.use(require('./middlewares/init'))
 app.use('/', routes)
 app.use('/users', users)
 app.use('/posts', posts)
+app.use('/comments', comments)
 app.use('/auth', auth)
 
 // catch 404 and forward to error handler

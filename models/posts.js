@@ -1,5 +1,5 @@
-'user strict'
-const db = require('../lib/query');
+'use strict'
+const db = require('../lib/query')
 
 const Post = function (post) {
 }
