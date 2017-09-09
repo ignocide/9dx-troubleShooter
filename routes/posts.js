@@ -26,7 +26,7 @@ router.route('/')
       }
       res.json({
         success: true,
-        result: posts[0]
+        result: posts
       })
     })
     .catch(errorRes(res))
