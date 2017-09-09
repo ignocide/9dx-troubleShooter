@@ -18,7 +18,7 @@ router.post('/facebook',
       var profile = yield getProfile.bind(null, req.body.accessToken)
       var user = yield modelUser.read.bind(null, uid)
       if (user.length) {
-        res.locals.user = user
+        res.locals.user = user[0]
         return next()
       }
       var date = getTime()

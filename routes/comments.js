@@ -5,6 +5,7 @@ const router = express.Router()
 const co = require('co')
 const modelComment = require('../models/comments')
 const modelVote = require('../models/votes')
+const mdAuth = require('../middlewares/auth')
 
 var errorRes = function (res) {
   return function (err) {
@@ -44,21 +45,43 @@ router.delete('/:comment_id',
 )
 
 router.route('/:comment_id/vote')
-  .post(function (req, res, next) {
-    co(function * () {
-      var uid = res.locals.user.uid
-      var vote = {
-        user_id: uid,
-        comment_id: req.params.comment_id
-      }
-      yield modelVote.create.bind(null, vote)
+  .post(
+    mdAuth.requireLogin,
+    function (req, res, next) {
+      co(function * () {
+        var uid = res.locals.user.uid
+        var vote = {
+          user_id: uid,
+          comment_id: req.params.comment_id
+        }
+        yield modelVote.create.bind(null, vote)
 
-      res.json({
-        success: true
+        res.json({
+          success: true
+        })
       })
-    })
-    .catch(errorRes(res))
-  }
+      .catch(errorRes(res))
+    }
+)
+
+router.route('/:comment_id/vote/:vote_id')
+  .post(
+    mdAuth.requireLogin,
+    function (req, res, next) {
+      co(function * () {
+        var uid = res.locals.user.uid
+        var vote = {
+          user_id: uid,
+          vote_id: req.params.vote_id
+        }
+        yield modelVote.delete.bind(null, vote)
+
+        res.json({
+          success: true
+        })
+      })
+      .catch(errorRes(res))
+    }
 )
 
 module.exports = router

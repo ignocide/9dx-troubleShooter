@@ -4,7 +4,7 @@ module.exports = {
     if (req.isAuthorization()) {
       return next()
     }
-    return res.json({
+    return res.status(401).json({
       success: false
     })
   }
