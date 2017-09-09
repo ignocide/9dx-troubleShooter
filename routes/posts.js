@@ -16,7 +16,8 @@ var errorRes = function (res) {
 }
 
 /* GET posts list */
-router.get('/',
+router.route('/')
+.get(
   function (req, res) {
     co(function * () {
       const posts = yield modelPost.list.bind(null)
@@ -31,27 +32,8 @@ router.get('/',
     .catch(errorRes(res))
   }
 )
-
-/* GET post get */
-router.get('/:post_id',
-  function (req, res) {
-    co(function * () {
-      const post = yield modelPost.get.bind(null, req.params.post_id)
-      const comments = yield modelComment.list.bind(null, req.params.post_id)
-      post.comments = comments
-      res.json({
-        success: true,
-        result: {
-          post: post
-        }
-      })
-    })
-    .catch(errorRes(res))
-  }
-)
-
-/* POST post create */
-router.post('/',
+// write post
+.post(
   function (req, res) {
     co(function * () {
       const date = getTime()
@@ -71,12 +53,29 @@ router.post('/',
   }
 )
 
-/* DELETE post delete */
-router.delete('/:id',
+/* GET post get */
+router.route('/:post_id')
+.get(
   function (req, res) {
     co(function * () {
-      const date = getTime()
-      yield modelPost.delete.bind(null, req.params.id, res.locals.user.uid, date)
+      const post = yield modelPost.get.bind(null, req.params.post_id)
+      const comments = yield modelComment.list.bind(null, req.params.post_id)
+      post.comments = comments
+      res.json({
+        success: true,
+        result: {
+          post: post
+        }
+      })
+    })
+    .catch(errorRes(res))
+  }
+)
+.put(
+  function (req, res) {
+    co(function * () {
+      req.body.updated = getTime()
+      yield modelPost.update.bind(null, req.params.post_id, res.locals.user.uid, req.body)
       res.json({
         success: true
       })
@@ -84,13 +83,11 @@ router.delete('/:id',
     .catch(errorRes(res))
   }
 )
-
-/* UPDATE post update */
-router.put('/:id',
+.delete(
   function (req, res) {
     co(function * () {
-      req.body.updated = getTime()
-      yield modelPost.update.bind(null, req.params.id, res.locals.user.uid, req.body)
+      const date = getTime()
+      yield modelPost.delete.bind(null, req.params.post_id, res.locals.user.uid, date)
       res.json({
         success: true
       })
@@ -100,7 +97,8 @@ router.put('/:id',
 )
 
 /* GET comments list */
-router.get('/:post_id/comments',
+router.route('/:post_id/comments')
+get(
   function (req, res) {
     co(function * () {
       const comments = yield modelComment.list.bind(null, req.params.post_id)
@@ -112,9 +110,7 @@ router.get('/:post_id/comments',
     .catch(errorRes(res))
   }
 )
-
-/* POST comment create */
-router.post('/:post_id/comments',
+.post(
   function (req, res) {
     co(function * () {
       let comment = {
