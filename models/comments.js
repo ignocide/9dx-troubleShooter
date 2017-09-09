@@ -15,7 +15,7 @@ Comment.prototype.create = function (comment, cb) {
 }
 
 Comment.prototype.list = function (post_id, cb) {
-  db.query('SELECT * FROM comments WHERE post_id=$post_id AND deleted=0', {post_id, post_id}, function (err, rows) {
+  db.query('SELECT co.* ,count(votes.comment_id) as count FROM comments as co left outer join votes on co.id = votes.comment_id and votes.deleted = 0 WHERE co.deleted=0 and co.post_id = $post_id group by votes.id', {post_id, post_id}, function (err, rows) {
     cb(err, rows)
   })
 }

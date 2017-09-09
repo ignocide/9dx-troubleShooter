@@ -38,10 +38,10 @@ Post.prototype.get = function (post_id, cb) {
     if (err) {
       cb(err)
     }
+
     if (!rows.length) {
       cb(new Error('no post'))
     }
-    console.log(rows)
     var post = normalize(rows[0])
     cb(null, post)
   })
