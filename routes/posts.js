@@ -21,9 +21,6 @@ router.route('/')
   function (req, res) {
     co(function * () {
       const posts = yield modelPost.list.bind(null)
-      if (!posts.length) {
-        throw new Error('no post')
-      }
       res.json({
         success: true,
         result: posts
