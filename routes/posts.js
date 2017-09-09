@@ -38,11 +38,11 @@ router.get('/:post_id',
     co(function * () {
       const post = yield modelPost.get.bind(null, req.params.post_id)
       const comments = yield modelComment.list.bind(null, req.params.post_id)
+      post.comments = comments
       res.json({
         success: true,
         result: {
-          post: post,
-          comments: comments
+          post: post
         }
       })
     })
