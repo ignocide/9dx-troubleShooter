@@ -8,9 +8,9 @@ const modelComment = require('../models/comments')
 
 var errorRes = function (res) {
   return function (err) {
-    res.json({
+    res.status(500).json({
       success: false,
-      message: err
+      message: err.message
     })
   }
 }
@@ -26,13 +26,14 @@ router.get('/',
       })
     })
     .catch(errorRes(res))
-  })
+  }
+)
 
 /* GET post get */
-router.get('/:id',
+router.get('/:post_id',
   function (req, res) {
     co(function * () {
-      const post = yield modelPost.get.bind(null, req.params.id)
+      const post = yield modelPost.get.bind(null, req.params.post_id)
       const comments = yield modelComment.list.bind(null, req.params.id)
       res.json({
         success: true,
@@ -50,7 +51,7 @@ router.get('/:id',
 router.post('/',
   function (req, res) {
     co(function * () {
-      const date = +new Date()
+      const date = getTime()
       let post = {
         title: req.body.title,
         content: req.body.content,
@@ -64,13 +65,14 @@ router.post('/',
       })
     })
     .catch(errorRes(res))
-  })
+  }
+)
 
 /* DELETE post delete */
 router.delete('/:id',
   function (req, res) {
     co(function * () {
-      const date = +new Date()
+      const date = getTime()
       yield modelPost.delete.bind(null, req.params.id, res.locals.user.uid, date)
       res.json({
         success: true
@@ -84,7 +86,7 @@ router.delete('/:id',
 router.put('/:id',
   function (req, res) {
     co(function * () {
-      req.body.updated = +new Date()
+      req.body.updated = getTime()
       yield modelPost.update.bind(null, req.params.id, res.locals.user.uid, req.body)
       res.json({
         success: true
@@ -95,10 +97,10 @@ router.put('/:id',
 )
 
 /* GET comments list */
-router.get('/:id/comments',
+router.get('/:post_id/comments',
   function (req, res) {
     co(function * () {
-      const comments = yield modelComment.list.bind(null, id)
+      const comments = yield modelComment.list.bind(null, req.params.post_id)
       res.json({
         success: true,
         result: comments
@@ -109,28 +111,21 @@ router.get('/:id/comments',
 )
 
 /* POST comment create */
-router.post('/:id/comments',
+router.post('/:post_id/comments',
   function (req, res) {
     co(function * () {
-      const date = +new Date()
       let comment = {
         content: req.body.content,
         user_id: res.locals.user.uid,
-        post_id: req.params.id,
-        created: date,
-        updated: date
+        post_id: req.params.post_id
       }
       yield modelComment.create.bind(null, comment)
       res.json({
         succes: true
       })
     })
-    .catch(function (err) {
-      res.json({
-        success: false
-      })
-    })
     .catch(errorRes(res))
-  })
+  }
+)
 
 module.exports = router

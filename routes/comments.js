@@ -6,10 +6,10 @@ const co = require('co')
 const modelComment = require('../models/comments')
 
 /* GET comment get */
-router.get('/:id',
-  function(req, res) {
+router.get('/:comment_id',
+  function (req, res) {
     co(function * () {
-      const comment = yield modelComment.get.bind(null, req.params.id)
+      const comment = yield modelComment.get.bind(null, req.params.comment_id)
       res.json({
         success: true,
         result: comment
@@ -19,14 +19,31 @@ router.get('/:id',
 )
 
 /* DELETE comment delete */
-router.delete('/:id',
-  function(req, res) {
+router.delete('/:comment_id',
+  function (req, res) {
     co(function * () {
-      const updated = +new Date()
-      yield modelComment.delete.bind(null, req.params.id, res.locals.user.uid, updated)
+      const updated = getTime()
+      yield modelComment.delete.bind(null, req.params.comment_id, res.locals.user.uid, updated)
       res.json({
         success: true
       })
     })
   }
 )
+
+//
+// router.route('/comment/:comment_id/vote')
+//   .get(function () {
+//
+//   })
+//
+
+router.route('/comment/:comment_id/vote')
+  .post(function (req, res, next) {
+    co(function * () {
+      yield
+    })
+  }
+)
+
+module.exports = router

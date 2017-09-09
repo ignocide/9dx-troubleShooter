@@ -6,7 +6,7 @@ const User = function (user) {
 
 User.prototype.create = function (user, cb) {
   if (!user.ctime) {
-    user.utime = user.ctime = +new Date()
+    user.utime = user.ctime = getTime()
   }
   db.query('INSERT INTO users(uid,name,utime,ctime) VALUES($uid,$name,$utime,$ctime)', user, function (err, rows) {
     cb(err, rows)

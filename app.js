@@ -49,6 +49,9 @@ app.use(function (req, res, next) {
   next(err)
 })
 
+global.getTime = function () {
+  return Math.floor(+new Date() / 1000)
+}
 // error handlers
 
 // development error handler
@@ -58,7 +61,7 @@ if (app.get('env') === 'development') {
     res.status(err.status || 500)
     res.render('error', {
       message: err.message,
-      error: err
+      error: errmodelComment
     })
   })
 }
