@@ -59,7 +59,7 @@ router.route('/:post_id')
     co(function * () {
       var user_id = 0
       try {
-        user_id = res.locals.user.uid
+        user_id = res.locals.user.uid || 0
       } catch (e) {}
       const post = yield modelPost.get.bind(null, req.params.post_id)
       const comments = yield modelComment.list.bind(null, req.params.post_id, user_id)

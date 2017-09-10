@@ -29,7 +29,8 @@ app.set('view engine', 'jade')
 // app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.all('/*', function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Headers', 'X-Requested-With,Authorization')
+  res.header('Access-Control-Allow-Methods', 'DELETE,POST,GET,PUT,OPTIONS')
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With,Authorization,authorization,Content-Type')
   next()
 })
 
